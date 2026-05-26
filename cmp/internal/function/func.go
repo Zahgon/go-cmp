@@ -8,8 +8,6 @@ package function
 import (
 	"reflect"
 	"regexp"
-	"runtime"
-	"strings"
 )
 
 type funcType int
@@ -38,69 +36,25 @@ var boolType = reflect.TypeOf(true)
 var intType = reflect.TypeOf(0)
 
 // IsType reports whether the reflect.Type is of the specified function type.
-func IsType(t reflect.Type, ft funcType) bool {
-	if t == nil || t.Kind() != reflect.Func || t.IsVariadic() {
-		return false
-	}
-	ni, no := t.NumIn(), t.NumOut()
-	switch ft {
-	case tbFunc: // func(T) bool
-		if ni == 1 && no == 1 && t.Out(0) == boolType {
-			return true
-		}
-	case ttbFunc: // func(T, T) bool
-		if ni == 2 && no == 1 && t.In(0) == t.In(1) && t.Out(0) == boolType {
-			return true
-		}
-	case ttiFunc: // func(T, T) int
-		if ni == 2 && no == 1 && t.In(0) == t.In(1) && t.Out(0) == intType {
-			return true
-		}
-	case trbFunc: // func(T, R) bool
-		if ni == 2 && no == 1 && t.Out(0) == boolType {
-			return true
-		}
-	case tibFunc: // func(T, I) bool
-		if ni == 2 && no == 1 && t.In(0).AssignableTo(t.In(1)) && t.Out(0) == boolType {
-			return true
-		}
-	case trFunc: // func(T) R
-		if ni == 1 && no == 1 {
-			return true
-		}
-	}
-	return false
-}
+func IsType(t reflect.Type, ft funcType) bool { _ = "STUB: not implemented"; return false }
+
+// func(T) bool
+
+// func(T, T) bool
+
+// func(T, T) int
+
+// func(T, R) bool
+
+// func(T, I) bool
+
+// func(T) R
 
 var lastIdentRx = regexp.MustCompile(`[_\p{L}][_\p{L}\p{N}]*$`)
 
 // NameOf returns the name of the function value.
-func NameOf(v reflect.Value) string {
-	fnc := runtime.FuncForPC(v.Pointer())
-	if fnc == nil {
-		return "<unknown>"
-	}
-	fullName := fnc.Name() // e.g., "long/path/name/mypkg.(*MyType).(long/path/name/mypkg.myMethod)-fm"
+func NameOf(v reflect.Value) string { _ = "STUB: not implemented"; return "" }
 
-	// Method closures have a "-fm" suffix.
-	fullName = strings.TrimSuffix(fullName, "-fm")
+// e.g., "long/path/name/mypkg.(*MyType).(long/path/name/mypkg.myMethod)-fm"
 
-	var name string
-	for len(fullName) > 0 {
-		inParen := strings.HasSuffix(fullName, ")")
-		fullName = strings.TrimSuffix(fullName, ")")
-
-		s := lastIdentRx.FindString(fullName)
-		if s == "" {
-			break
-		}
-		name = s + "." + name
-		fullName = strings.TrimSuffix(fullName, s)
-
-		if i := strings.LastIndexByte(fullName, '('); inParen && i >= 0 {
-			fullName = fullName[:i]
-		}
-		fullName = strings.TrimSuffix(fullName, ".")
-	}
-	return strings.TrimSuffix(name, ".")
-}
+// Method closures have a "-fm" suffix.

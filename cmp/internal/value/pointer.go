@@ -18,17 +18,18 @@ type Pointer struct {
 // PointerOf returns a Pointer from v, which must be a
 // reflect.Ptr, reflect.Slice, or reflect.Map.
 func PointerOf(v reflect.Value) Pointer {
+	_ = "STUB: not implemented"
 	// The proper representation of a pointer is unsafe.Pointer,
 	// which is necessary if the GC ever uses a moving collector.
-	return Pointer{unsafe.Pointer(v.Pointer()), v.Type()}
+	return *new(Pointer)
 }
 
 // IsNil reports whether the pointer is nil.
 func (p Pointer) IsNil() bool {
-	return p.p == nil
+	_ = "STUB: not implemented"
+
+	// Uintptr returns the pointer as a uintptr.
+	return false
 }
 
-// Uintptr returns the pointer as a uintptr.
-func (p Pointer) Uintptr() uintptr {
-	return uintptr(p.p)
-}
+func (p Pointer) Uintptr() uintptr { _ = "STUB: not implemented"; return 0 }

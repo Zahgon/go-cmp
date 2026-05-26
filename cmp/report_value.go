@@ -51,71 +51,14 @@ type reportRecord struct {
 }
 
 func (parent *valueNode) PushStep(ps PathStep) (child *valueNode) {
-	vx, vy := ps.Values()
-	child = &valueNode{parent: parent, Type: ps.Type(), ValueX: vx, ValueY: vy}
-	switch s := ps.(type) {
-	case StructField:
-		assert(parent.Value == nil)
-		parent.Records = append(parent.Records, reportRecord{Key: reflect.ValueOf(s.Name()), Value: child})
-	case SliceIndex:
-		assert(parent.Value == nil)
-		parent.Records = append(parent.Records, reportRecord{Value: child})
-	case MapIndex:
-		assert(parent.Value == nil)
-		parent.Records = append(parent.Records, reportRecord{Key: s.Key(), Value: child})
-	case Indirect:
-		assert(parent.Value == nil && parent.Records == nil)
-		parent.Value = child
-	case TypeAssertion:
-		assert(parent.Value == nil && parent.Records == nil)
-		parent.Value = child
-	case Transform:
-		assert(parent.Value == nil && parent.Records == nil)
-		parent.Value = child
-		parent.TransformerName = s.Name()
-		parent.NumTransformed++
-	default:
-		assert(parent == nil) // Must be the root step
-	}
-	return child
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (r *valueNode) Report(rs Result) {
-	assert(r.MaxDepth == 0) // May only be called on leaf nodes
+// Must be the root step
 
-	if rs.ByIgnore() {
-		r.NumIgnored++
-	} else {
-		if rs.Equal() {
-			r.NumSame++
-		} else {
-			r.NumDiff++
-		}
-	}
-	assert(r.NumSame+r.NumDiff+r.NumIgnored == 1)
+func (r *valueNode) Report(rs Result) { _ = "STUB: not implemented"; return }
 
-	if rs.ByMethod() {
-		r.NumCompared++
-	}
-	if rs.ByFunc() {
-		r.NumCompared++
-	}
-	assert(r.NumCompared <= 1)
-}
+// May only be called on leaf nodes
 
-func (child *valueNode) PopStep() (parent *valueNode) {
-	if child.parent == nil {
-		return nil
-	}
-	parent = child.parent
-	parent.NumSame += child.NumSame
-	parent.NumDiff += child.NumDiff
-	parent.NumIgnored += child.NumIgnored
-	parent.NumCompared += child.NumCompared
-	parent.NumTransformed += child.NumTransformed
-	parent.NumChildren += child.NumChildren + 1
-	if parent.MaxDepth < child.MaxDepth+1 {
-		parent.MaxDepth = child.MaxDepth + 1
-	}
-	return parent
-}
+func (child *valueNode) PopStep() (parent *valueNode) { _ = "STUB: not implemented"; return nil }

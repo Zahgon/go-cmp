@@ -6,31 +6,25 @@
 package cmpopts
 
 import (
-	"errors"
-	"fmt"
-	"math"
 	"reflect"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-func equateAlways(_, _ interface{}) bool { return true }
+func equateAlways(_, _ interface{}) bool {
+	_ = "STUB: not implemented"
 
-// EquateEmpty returns a [cmp.Comparer] option that determines all maps and slices
-// with a length of zero to be equal, regardless of whether they are nil.
-//
-// EquateEmpty can be used in conjunction with [SortSlices] and [SortMaps].
-func EquateEmpty() cmp.Option {
-	return cmp.FilterValues(isEmpty, cmp.Comparer(equateAlways))
+	// EquateEmpty returns a [cmp.Comparer] option that determines all maps and slices
+	// with a length of zero to be equal, regardless of whether they are nil.
+	//
+	// EquateEmpty can be used in conjunction with [SortSlices] and [SortMaps].
+	return false
 }
 
-func isEmpty(x, y interface{}) bool {
-	vx, vy := reflect.ValueOf(x), reflect.ValueOf(y)
-	return (x != nil && y != nil && vx.Type() == vy.Type()) &&
-		(vx.Kind() == reflect.Slice || vx.Kind() == reflect.Map) &&
-		(vx.Len() == 0 && vy.Len() == 0)
-}
+func EquateEmpty() cmp.Option { _ = "STUB: not implemented"; return *new(cmp.Option) }
+
+func isEmpty(x, y interface{}) bool { _ = "STUB: not implemented"; return false }
 
 // EquateApprox returns a [cmp.Comparer] option that determines float32 or float64
 // values to be equal if they are within a relative fraction or absolute margin.
@@ -48,113 +42,82 @@ func isEmpty(x, y interface{}) bool {
 //
 // EquateApprox can be used in conjunction with [EquateNaNs].
 func EquateApprox(fraction, margin float64) cmp.Option {
-	if margin < 0 || fraction < 0 || math.IsNaN(margin) || math.IsNaN(fraction) {
-		panic("margin or fraction must be a non-negative number")
-	}
-	a := approximator{fraction, margin}
-	return cmp.Options{
-		cmp.FilterValues(areRealF64s, cmp.Comparer(a.compareF64)),
-		cmp.FilterValues(areRealF32s, cmp.Comparer(a.compareF32)),
-	}
+	_ = "STUB: not implemented"
+	return *new(cmp.Option)
 }
 
 type approximator struct{ frac, marg float64 }
 
-func areRealF64s(x, y float64) bool {
-	return !math.IsNaN(x) && !math.IsNaN(y) && !math.IsInf(x, 0) && !math.IsInf(y, 0)
-}
-func areRealF32s(x, y float32) bool {
-	return areRealF64s(float64(x), float64(y))
-}
-func (a approximator) compareF64(x, y float64) bool {
-	relMarg := a.frac * math.Min(math.Abs(x), math.Abs(y))
-	return math.Abs(x-y) <= math.Max(a.marg, relMarg)
-}
-func (a approximator) compareF32(x, y float32) bool {
-	return a.compareF64(float64(x), float64(y))
-}
+func areRealF64s(x, y float64) bool { _ = "STUB: not implemented"; return false }
+
+func areRealF32s(x, y float32) bool { _ = "STUB: not implemented"; return false }
+
+func (a approximator) compareF64(x, y float64) bool { _ = "STUB: not implemented"; return false }
+
+func (a approximator) compareF32(x, y float32) bool { _ = "STUB: not implemented"; return false }
 
 // EquateNaNs returns a [cmp.Comparer] option that determines float32 and float64
 // NaN values to be equal.
 //
 // EquateNaNs can be used in conjunction with [EquateApprox].
-func EquateNaNs() cmp.Option {
-	return cmp.Options{
-		cmp.FilterValues(areNaNsF64s, cmp.Comparer(equateAlways)),
-		cmp.FilterValues(areNaNsF32s, cmp.Comparer(equateAlways)),
-	}
-}
+func EquateNaNs() cmp.Option { _ = "STUB: not implemented"; return *new(cmp.Option) }
 
-func areNaNsF64s(x, y float64) bool {
-	return math.IsNaN(x) && math.IsNaN(y)
-}
-func areNaNsF32s(x, y float32) bool {
-	return areNaNsF64s(float64(x), float64(y))
-}
+func areNaNsF64s(x, y float64) bool { _ = "STUB: not implemented"; return false }
+
+func areNaNsF32s(x, y float32) bool { _ = "STUB: not implemented"; return false }
 
 // EquateApproxTime returns a [cmp.Comparer] option that determines two non-zero
 // [time.Time] values to be equal if they are within some margin of one another.
 // If both times have a monotonic clock reading, then the monotonic time
 // difference will be used. The margin must be non-negative.
 func EquateApproxTime(margin time.Duration) cmp.Option {
-	if margin < 0 {
-		panic("margin must be a non-negative number")
-	}
-	a := timeApproximator{margin}
-	return cmp.FilterValues(areNonZeroTimes, cmp.Comparer(a.compare))
+	_ = "STUB: not implemented"
+	return *new(cmp.Option)
 }
 
-func areNonZeroTimes(x, y time.Time) bool {
-	return !x.IsZero() && !y.IsZero()
-}
+func areNonZeroTimes(x, y time.Time) bool { _ = "STUB: not implemented"; return false }
 
 type timeApproximator struct {
 	margin time.Duration
 }
 
 func (a timeApproximator) compare(x, y time.Time) bool {
+	_ = "STUB: not implemented"
 	// Avoid subtracting times to avoid overflow when the
 	// difference is larger than the largest representable duration.
-	if x.After(y) {
-		// Ensure x is always before y
-		x, y = y, x
-	}
-	// We're within the margin if x+margin >= y.
-	// Note: time.Time doesn't have AfterOrEqual method hence the negation.
-	return !x.Add(a.margin).Before(y)
+	return false
 }
+
+// Ensure x is always before y
+
+// We're within the margin if x+margin >= y.
+// Note: time.Time doesn't have AfterOrEqual method hence the negation.
 
 // AnyError is an error that matches any non-nil error.
 var AnyError anyError
 
 type anyError struct{}
 
-func (anyError) Error() string     { return "any error" }
-func (anyError) Is(err error) bool { return err != nil }
+func (anyError) Error() string { _ = "STUB: not implemented"; return "" }
+func (anyError) Is(err error) bool {
+	_ = "STUB: not implemented"
 
-// EquateErrors returns a [cmp.Comparer] option that determines errors to be equal
-// if [errors.Is] reports them to match. The [AnyError] error can be used to
-// match any non-nil error.
-func EquateErrors() cmp.Option {
-	return cmp.FilterValues(areConcreteErrors, cmp.Comparer(compareErrors))
+	// EquateErrors returns a [cmp.Comparer] option that determines errors to be equal
+	// if [errors.Is] reports them to match. The [AnyError] error can be used to
+	// match any non-nil error.
+	return false
 }
+
+func EquateErrors() cmp.Option { _ = "STUB: not implemented"; return *new(cmp.Option) }
 
 // areConcreteErrors reports whether x and y are types that implement error.
 // The input types are deliberately of the interface{} type rather than the
 // error type so that we can handle situations where the current type is an
 // interface{}, but the underlying concrete types both happen to implement
 // the error interface.
-func areConcreteErrors(x, y interface{}) bool {
-	_, ok1 := x.(error)
-	_, ok2 := y.(error)
-	return ok1 && ok2
-}
+func areConcreteErrors(x, y interface{}) bool { _ = "STUB: not implemented"; return false }
 
-func compareErrors(x, y interface{}) bool {
-	xe := x.(error)
-	ye := y.(error)
-	return errors.Is(xe, ye) || errors.Is(ye, xe)
-}
+func compareErrors(x, y interface{}) bool { _ = "STUB: not implemented"; return false }
 
 // EquateComparable returns a [cmp.Option] that determines equality
 // of comparable types by directly comparing them using the == operator in Go.
@@ -164,22 +127,12 @@ func compareErrors(x, y interface{}) bool {
 // as being semantically safe to use with ==, while [time.Time] is documented
 // to discourage the use of == on time values.
 func EquateComparable(typs ...interface{}) cmp.Option {
-	types := make(typesFilter)
-	for _, typ := range typs {
-		switch t := reflect.TypeOf(typ); {
-		case !t.Comparable():
-			panic(fmt.Sprintf("%T is not a comparable Go type", typ))
-		case types[t]:
-			panic(fmt.Sprintf("%T is already specified", typ))
-		default:
-			types[t] = true
-		}
-	}
-	return cmp.FilterPath(types.filter, cmp.Comparer(equateAny))
+	_ = "STUB: not implemented"
+	return *new(cmp.Option)
 }
 
 type typesFilter map[reflect.Type]bool
 
-func (tf typesFilter) filter(p cmp.Path) bool { return tf[p.Last().Type()] }
+func (tf typesFilter) filter(p cmp.Path) bool { _ = "STUB: not implemented"; return false }
 
-func equateAny(x, y interface{}) bool { return x == y }
+func equateAny(x, y interface{}) bool { _ = "STUB: not implemented"; return false }

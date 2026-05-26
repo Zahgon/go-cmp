@@ -5,12 +5,8 @@
 package cmp
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
-	"strings"
-
-	"github.com/google/go-cmp/cmp/internal/function"
 )
 
 // Option configures for specific behavior of [Equal] and [Diff]. In particular,
@@ -54,56 +50,37 @@ type coreOption interface {
 
 type core struct{}
 
-func (core) isCore() {}
+func (core) isCore() {
+	_ = "STUB: not implemented"
 
-// Options is a list of [Option] values that also satisfies the [Option] interface.
-// Helper comparison packages may return an Options value when packing multiple
-// [Option] values into a single [Option]. When this package processes an Options,
-// it will be implicitly expanded into a flat list.
-//
-// Applying a filter on an Options is equivalent to applying that same filter
-// on all individual options held within.
+	// Options is a list of [Option] values that also satisfies the [Option] interface.
+	// Helper comparison packages may return an Options value when packing multiple
+	// [Option] values into a single [Option]. When this package processes an Options,
+	// it will be implicitly expanded into a flat list.
+	//
+	// Applying a filter on an Options is equivalent to applying that same filter
+	// on all individual options held within.
+	return
+}
+
 type Options []Option
 
 func (opts Options) filter(s *state, t reflect.Type, vx, vy reflect.Value) (out applicableOption) {
-	for _, opt := range opts {
-		switch opt := opt.filter(s, t, vx, vy); opt.(type) {
-		case ignore:
-			return ignore{} // Only ignore can short-circuit evaluation
-		case validator:
-			out = validator{} // Takes precedence over comparer or transformer
-		case *comparer, *transformer, Options:
-			switch out.(type) {
-			case nil:
-				out = opt
-			case validator:
-				// Keep validator
-			case *comparer, *transformer, Options:
-				out = Options{out, opt} // Conflicting comparers or transformers
-			}
-		}
-	}
-	return out
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
 
-func (opts Options) apply(s *state, _, _ reflect.Value) {
-	const warning = "ambiguous set of applicable options"
-	const help = "consider using filters to ensure at most one Comparer or Transformer may apply"
-	var ss []string
-	for _, opt := range flattenOptions(nil, opts) {
-		ss = append(ss, fmt.Sprint(opt))
-	}
-	set := strings.Join(ss, "\n\t")
-	panic(fmt.Sprintf("%s at %#v:\n\t%s\n%s", warning, s.curPath, set, help))
-}
+// Only ignore can short-circuit evaluation
 
-func (opts Options) String() string {
-	var ss []string
-	for _, opt := range opts {
-		ss = append(ss, fmt.Sprint(opt))
-	}
-	return fmt.Sprintf("Options{%s}", strings.Join(ss, ", "))
-}
+// Takes precedence over comparer or transformer
+
+// Keep validator
+
+// Conflicting comparers or transformers
+
+func (opts Options) apply(s *state, _, _ reflect.Value) { _ = "STUB: not implemented"; return }
+
+func (opts Options) String() string { _ = "STUB: not implemented"; return "" }
 
 // FilterPath returns a new [Option] where opt is only evaluated if filter f
 // returns true for the current [Path] in the value tree.
@@ -116,13 +93,8 @@ func (opts Options) String() string {
 // The option passed in may be an [Ignore], [Transformer], [Comparer], [Options], or
 // a previously filtered [Option].
 func FilterPath(f func(Path) bool, opt Option) Option {
-	if f == nil {
-		panic("invalid path filter function")
-	}
-	if opt := normalizeOption(opt); opt != nil {
-		return &pathFilter{fnc: f, opt: opt}
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(Option)
 }
 
 type pathFilter struct {
@@ -132,15 +104,11 @@ type pathFilter struct {
 }
 
 func (f pathFilter) filter(s *state, t reflect.Type, vx, vy reflect.Value) applicableOption {
-	if f.fnc(s.curPath) {
-		return f.opt.filter(s, t, vx, vy)
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
 
-func (f pathFilter) String() string {
-	return fmt.Sprintf("FilterPath(%s, %v)", function.NameOf(reflect.ValueOf(f.fnc)), f.opt)
-}
+func (f pathFilter) String() string { _ = "STUB: not implemented"; return "" }
 
 // FilterValues returns a new [Option] where opt is only evaluated if filter f,
 // which is a function of the form "func(T, T) bool", returns true for the
@@ -156,20 +124,7 @@ func (f pathFilter) String() string {
 //
 // The option passed in may be an [Ignore], [Transformer], [Comparer], [Options], or
 // a previously filtered [Option].
-func FilterValues(f interface{}, opt Option) Option {
-	v := reflect.ValueOf(f)
-	if !function.IsType(v.Type(), function.ValueFilter) || v.IsNil() {
-		panic(fmt.Sprintf("invalid values filter function: %T", f))
-	}
-	if opt := normalizeOption(opt); opt != nil {
-		vf := &valuesFilter{fnc: v, opt: opt}
-		if ti := v.Type().In(0); ti.Kind() != reflect.Interface || ti.NumMethod() > 0 {
-			vf.typ = ti
-		}
-		return vf
-	}
-	return nil
-}
+func FilterValues(f interface{}, opt Option) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 type valuesFilter struct {
 	core
@@ -179,30 +134,26 @@ type valuesFilter struct {
 }
 
 func (f valuesFilter) filter(s *state, t reflect.Type, vx, vy reflect.Value) applicableOption {
-	if !vx.IsValid() || !vx.CanInterface() || !vy.IsValid() || !vy.CanInterface() {
-		return nil
-	}
-	if (f.typ == nil || t.AssignableTo(f.typ)) && s.callTTBFunc(f.fnc, vx, vy) {
-		return f.opt.filter(s, t, vx, vy)
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
 
-func (f valuesFilter) String() string {
-	return fmt.Sprintf("FilterValues(%s, %v)", function.NameOf(f.fnc), f.opt)
-}
+func (f valuesFilter) String() string { _ = "STUB: not implemented"; return "" }
 
 // Ignore is an [Option] that causes all comparisons to be ignored.
 // This value is intended to be combined with [FilterPath] or [FilterValues].
 // It is an error to pass an unfiltered Ignore option to [Equal].
-func Ignore() Option { return ignore{} }
+func Ignore() Option { _ = "STUB: not implemented"; return *new(Option) }
 
 type ignore struct{ core }
 
-func (ignore) isFiltered() bool                                                     { return false }
-func (ignore) filter(_ *state, _ reflect.Type, _, _ reflect.Value) applicableOption { return ignore{} }
-func (ignore) apply(s *state, _, _ reflect.Value)                                   { s.report(true, reportByIgnore) }
-func (ignore) String() string                                                       { return "Ignore()" }
+func (ignore) isFiltered() bool { _ = "STUB: not implemented"; return false }
+func (ignore) filter(_ *state, _ reflect.Type, _, _ reflect.Value) applicableOption {
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
+}
+func (ignore) apply(s *state, _, _ reflect.Value) { _ = "STUB: not implemented"; return }
+func (ignore) String() string                     { _ = "STUB: not implemented"; return "" }
 
 // validator is a sentinel Option type to indicate that some options could not
 // be evaluated due to unexported fields, missing slice elements, or
@@ -210,54 +161,24 @@ func (ignore) String() string                                                   
 type validator struct{ core }
 
 func (validator) filter(_ *state, _ reflect.Type, vx, vy reflect.Value) applicableOption {
-	if !vx.IsValid() || !vy.IsValid() {
-		return validator{}
-	}
-	if !vx.CanInterface() || !vy.CanInterface() {
-		return validator{}
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
+
 func (validator) apply(s *state, vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
 	// Implies missing slice element or map entry.
-	if !vx.IsValid() || !vy.IsValid() {
-		s.report(vx.IsValid() == vy.IsValid(), 0)
-		return
-	}
-
-	// Unable to Interface implies unexported field without visibility access.
-	if !vx.CanInterface() || !vy.CanInterface() {
-		help := "consider using a custom Comparer; if you control the implementation of type, you can also consider using an Exporter, AllowUnexported, or cmpopts.IgnoreUnexported"
-		var name string
-		if t := s.curPath.Index(-2).Type(); t.Name() != "" {
-			// Named type with unexported fields.
-			name = fmt.Sprintf("%q.%v", t.PkgPath(), t.Name()) // e.g., "path/to/package".MyType
-			isProtoMessage := func(t reflect.Type) bool {
-				m, ok := reflect.PointerTo(t).MethodByName("ProtoReflect")
-				return ok && m.Type.NumIn() == 1 && m.Type.NumOut() == 1 &&
-					m.Type.Out(0).PkgPath() == "google.golang.org/protobuf/reflect/protoreflect" &&
-					m.Type.Out(0).Name() == "Message"
-			}
-			if isProtoMessage(t) {
-				help = `consider using "google.golang.org/protobuf/testing/protocmp".Transform to compare proto.Message types`
-			} else if _, ok := reflect.New(t).Interface().(error); ok {
-				help = "consider using cmpopts.EquateErrors to compare error values"
-			} else if t.Comparable() {
-				help = "consider using cmpopts.EquateComparable to compare comparable Go types"
-			}
-		} else {
-			// Unnamed type with unexported fields. Derive PkgPath from field.
-			var pkgPath string
-			for i := 0; i < t.NumField() && pkgPath == ""; i++ {
-				pkgPath = t.Field(i).PkgPath
-			}
-			name = fmt.Sprintf("%q.(%v)", pkgPath, t.String()) // e.g., "path/to/package".(struct { a int })
-		}
-		panic(fmt.Sprintf("cannot handle unexported field at %#v:\n\t%v\n%s", s.curPath, name, help))
-	}
-
-	panic("not reachable")
+	return
 }
+
+// Unable to Interface implies unexported field without visibility access.
+
+// Named type with unexported fields.
+// e.g., "path/to/package".MyType
+
+// Unnamed type with unexported fields. Derive PkgPath from field.
+
+// e.g., "path/to/package".(struct { a int })
 
 // identRx represents a valid identifier according to the Go specification.
 const identRx = `[_\p{L}][_\p{L}\p{N}]*`
@@ -285,25 +206,9 @@ var identsRx = regexp.MustCompile(`^` + identRx + `(\.` + identRx + `)*$`)
 // transformation [PathStep] (and eventually shown in the [Diff] output).
 // The name must be a valid identifier or qualified identifier in Go syntax.
 // If empty, an arbitrary name is used.
-func Transformer(name string, f interface{}) Option {
-	v := reflect.ValueOf(f)
-	if !function.IsType(v.Type(), function.Transformer) || v.IsNil() {
-		panic(fmt.Sprintf("invalid transformer function: %T", f))
-	}
-	if name == "" {
-		name = function.NameOf(v)
-		if !identsRx.MatchString(name) {
-			name = "λ" // Lambda-symbol as placeholder name
-		}
-	} else if !identsRx.MatchString(name) {
-		panic(fmt.Sprintf("invalid name: %q", name))
-	}
-	tr := &transformer{name: name, fnc: reflect.ValueOf(f)}
-	if ti := v.Type().In(0); ti.Kind() != reflect.Interface || ti.NumMethod() > 0 {
-		tr.typ = ti
-	}
-	return tr
-}
+func Transformer(name string, f interface{}) Option { _ = "STUB: not implemented"; return *new(Option) }
+
+// Lambda-symbol as placeholder name
 
 type transformer struct {
 	core
@@ -312,33 +217,20 @@ type transformer struct {
 	fnc  reflect.Value // func(T) R
 }
 
-func (tr *transformer) isFiltered() bool { return tr.typ != nil }
+func (tr *transformer) isFiltered() bool { _ = "STUB: not implemented"; return false }
 
 func (tr *transformer) filter(s *state, t reflect.Type, _, _ reflect.Value) applicableOption {
-	for i := len(s.curPath) - 1; i >= 0; i-- {
-		if t, ok := s.curPath[i].(Transform); !ok {
-			break // Hit most recent non-Transform step
-		} else if tr == t.trans {
-			return nil // Cannot directly use same Transform
-		}
-	}
-	if tr.typ == nil || t.AssignableTo(tr.typ) {
-		return tr
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
 
-func (tr *transformer) apply(s *state, vx, vy reflect.Value) {
-	step := Transform{&transform{pathStep{typ: tr.fnc.Type().Out(0)}, tr}}
-	vvx := s.callTRFunc(tr.fnc, vx, step)
-	vvy := s.callTRFunc(tr.fnc, vy, step)
-	step.vx, step.vy = vvx, vvy
-	s.compareAny(step)
-}
+// Hit most recent non-Transform step
 
-func (tr transformer) String() string {
-	return fmt.Sprintf("Transformer(%s, %s)", tr.name, function.NameOf(tr.fnc))
-}
+// Cannot directly use same Transform
+
+func (tr *transformer) apply(s *state, vx, vy reflect.Value) { _ = "STUB: not implemented"; return }
+
+func (tr transformer) String() string { _ = "STUB: not implemented"; return "" }
 
 // Comparer returns an [Option] that determines whether two values are equal
 // to each other.
@@ -352,17 +244,7 @@ func (tr transformer) String() string {
 //   - Symmetric: equal(x, y) == equal(y, x)
 //   - Deterministic: equal(x, y) == equal(x, y)
 //   - Pure: equal(x, y) does not modify x or y
-func Comparer(f interface{}) Option {
-	v := reflect.ValueOf(f)
-	if !function.IsType(v.Type(), function.Equal) || v.IsNil() {
-		panic(fmt.Sprintf("invalid comparer function: %T", f))
-	}
-	cm := &comparer{fnc: v}
-	if ti := v.Type().In(0); ti.Kind() != reflect.Interface || ti.NumMethod() > 0 {
-		cm.typ = ti
-	}
-	return cm
-}
+func Comparer(f interface{}) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 type comparer struct {
 	core
@@ -370,23 +252,16 @@ type comparer struct {
 	fnc reflect.Value // func(T, T) bool
 }
 
-func (cm *comparer) isFiltered() bool { return cm.typ != nil }
+func (cm *comparer) isFiltered() bool { _ = "STUB: not implemented"; return false }
 
 func (cm *comparer) filter(_ *state, t reflect.Type, _, _ reflect.Value) applicableOption {
-	if cm.typ == nil || t.AssignableTo(cm.typ) {
-		return cm
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(applicableOption)
 }
 
-func (cm *comparer) apply(s *state, vx, vy reflect.Value) {
-	eq := s.callTTBFunc(cm.fnc, vx, vy)
-	s.report(eq, reportByFunc)
-}
+func (cm *comparer) apply(s *state, vx, vy reflect.Value) { _ = "STUB: not implemented"; return }
 
-func (cm comparer) String() string {
-	return fmt.Sprintf("Comparer(%s)", function.NameOf(cm.fnc))
-}
+func (cm comparer) String() string { _ = "STUB: not implemented"; return "" }
 
 // Exporter returns an [Option] that specifies whether [Equal] is allowed to
 // introspect into the unexported fields of certain struct types.
@@ -413,31 +288,22 @@ func (cm comparer) String() string {
 //
 // In other cases, the [github.com/google/go-cmp/cmp/cmpopts.IgnoreUnexported]
 // option can be used to ignore all unexported fields on specified struct types.
-func Exporter(f func(reflect.Type) bool) Option {
-	return exporter(f)
-}
+func Exporter(f func(reflect.Type) bool) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 type exporter func(reflect.Type) bool
 
 func (exporter) filter(_ *state, _ reflect.Type, _, _ reflect.Value) applicableOption {
-	panic("not implemented")
+	_ = "STUB: not implemented"
+	return *
+
+	// AllowUnexported returns an [Option] that allows [Equal] to forcibly introspect
+	// unexported fields of the specified struct types.
+	//
+	// See [Exporter] for the proper use of this option.
+	new(applicableOption)
 }
 
-// AllowUnexported returns an [Option] that allows [Equal] to forcibly introspect
-// unexported fields of the specified struct types.
-//
-// See [Exporter] for the proper use of this option.
-func AllowUnexported(types ...interface{}) Option {
-	m := make(map[reflect.Type]bool)
-	for _, typ := range types {
-		t := reflect.TypeOf(typ)
-		if t.Kind() != reflect.Struct {
-			panic(fmt.Sprintf("invalid struct type: %T", typ))
-		}
-		m[t] = true
-	}
-	return exporter(func(t reflect.Type) bool { return m[t] })
-}
+func AllowUnexported(types ...interface{}) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // Result represents the comparison result for a single node and
 // is provided by cmp when calling Report (see [Reporter]).
@@ -448,30 +314,20 @@ type Result struct {
 
 // Equal reports whether the node was determined to be equal or not.
 // As a special case, ignored nodes are considered equal.
-func (r Result) Equal() bool {
-	return r.flags&(reportEqual|reportByIgnore) != 0
-}
+func (r Result) Equal() bool { _ = "STUB: not implemented"; return false }
 
 // ByIgnore reports whether the node is equal because it was ignored.
 // This never reports true if [Result.Equal] reports false.
-func (r Result) ByIgnore() bool {
-	return r.flags&reportByIgnore != 0
-}
+func (r Result) ByIgnore() bool { _ = "STUB: not implemented"; return false }
 
 // ByMethod reports whether the Equal method determined equality.
-func (r Result) ByMethod() bool {
-	return r.flags&reportByMethod != 0
-}
+func (r Result) ByMethod() bool { _ = "STUB: not implemented"; return false }
 
 // ByFunc reports whether a [Comparer] function determined equality.
-func (r Result) ByFunc() bool {
-	return r.flags&reportByFunc != 0
-}
+func (r Result) ByFunc() bool { _ = "STUB: not implemented"; return false }
 
 // ByCycle reports whether a reference cycle was detected.
-func (r Result) ByCycle() bool {
-	return r.flags&reportByCycle != 0
-}
+func (r Result) ByCycle() bool { _ = "STUB: not implemented"; return false }
 
 type resultFlags uint
 
@@ -515,7 +371,8 @@ func Reporter(r interface {
 	// There is always a matching pop call for every push call.
 	PopStep()
 }) Option {
-	return reporter{r}
+	_ = "STUB: not implemented"
+	return *new(Option)
 }
 
 type reporter struct{ reporterIface }
@@ -526,37 +383,17 @@ type reporterIface interface {
 }
 
 func (reporter) filter(_ *state, _ reflect.Type, _, _ reflect.Value) applicableOption {
-	panic("not implemented")
+	_ = "STUB: not implemented"
+	return *
+
+	// normalizeOption normalizes the input options such that all Options groups
+	// are flattened and groups with a single element are reduced to that element.
+	// Only coreOptions and Options containing coreOptions are allowed.
+	new(applicableOption)
 }
 
-// normalizeOption normalizes the input options such that all Options groups
-// are flattened and groups with a single element are reduced to that element.
-// Only coreOptions and Options containing coreOptions are allowed.
-func normalizeOption(src Option) Option {
-	switch opts := flattenOptions(nil, Options{src}); len(opts) {
-	case 0:
-		return nil
-	case 1:
-		return opts[0]
-	default:
-		return opts
-	}
-}
+func normalizeOption(src Option) Option { _ = "STUB: not implemented"; return *new(Option) }
 
 // flattenOptions copies all options in src to dst as a flat list.
 // Only coreOptions and Options containing coreOptions are allowed.
-func flattenOptions(dst, src Options) Options {
-	for _, opt := range src {
-		switch opt := opt.(type) {
-		case nil:
-			continue
-		case Options:
-			dst = flattenOptions(dst, opt)
-		case coreOption:
-			dst = append(dst, opt)
-		default:
-			panic(fmt.Sprintf("invalid option type: %T", opt))
-		}
-	}
-	return dst
-}
+func flattenOptions(dst, src Options) Options { _ = "STUB: not implemented"; return *new(Options) }

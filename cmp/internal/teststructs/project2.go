@@ -62,13 +62,6 @@ type Dish struct {
 	err error
 }
 
-func CreateDish(m *pb.Dish, err error) *Dish {
-	return &Dish{pb: m, err: err}
-}
+func CreateDish(m *pb.Dish, err error) *Dish { _ = "STUB: not implemented"; return nil }
 
-func (d *Dish) Proto() (*pb.Dish, error) {
-	if d.err != nil {
-		return nil, d.err
-	}
-	return d.pb, nil
-}
+func (d *Dish) Proto() (*pb.Dish, error) { _ = "STUB: not implemented"; return nil, nil }

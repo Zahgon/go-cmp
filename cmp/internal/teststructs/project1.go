@@ -260,8 +260,8 @@ type SummerLoveSummary struct {
 	empty      bool
 }
 
-func (EagleImmutable) Proto() *pb.Eagle     { return nil }
-func (DreamerImmutable) Proto() *pb.Dreamer { return nil }
-func (SlapImmutable) Proto() *pb.Slap       { return nil }
-func (GoatImmutable) Proto() *pb.Goat       { return nil }
-func (DonkeyImmutable) Proto() *pb.Donkey   { return nil }
+func (EagleImmutable) Proto() *pb.Eagle     { _ = "STUB: not implemented"; return nil }
+func (DreamerImmutable) Proto() *pb.Dreamer { _ = "STUB: not implemented"; return nil }
+func (SlapImmutable) Proto() *pb.Slap       { _ = "STUB: not implemented"; return nil }
+func (GoatImmutable) Proto() *pb.Goat       { _ = "STUB: not implemented"; return nil }
+func (DonkeyImmutable) Proto() *pb.Donkey   { _ = "STUB: not implemented"; return nil }

@@ -5,11 +5,7 @@
 package cmp
 
 import (
-	"fmt"
 	"reflect"
-	"strings"
-	"unicode"
-	"unicode/utf8"
 
 	"github.com/google/go-cmp/cmp/internal/value"
 )
@@ -67,35 +63,26 @@ var (
 	_ PathStep = Transform{}
 )
 
-func (pa *Path) push(s PathStep) {
-	*pa = append(*pa, s)
-}
+func (pa *Path) push(s PathStep) { _ = "STUB: not implemented"; return }
 
-func (pa *Path) pop() {
-	*pa = (*pa)[:len(*pa)-1]
-}
+func (pa *Path) pop() { _ = "STUB: not implemented"; return }
 
 // Last returns the last [PathStep] in the Path.
 // If the path is empty, this returns a non-nil [PathStep]
 // that reports a nil [PathStep.Type].
 func (pa Path) Last() PathStep {
-	return pa.Index(-1)
+	_ = "STUB: not implemented"
+	return *
+
+	// Index returns the ith step in the Path and supports negative indexing.
+	// A negative index starts counting from the tail of the Path such that -1
+	// refers to the last step, -2 refers to the second-to-last step, and so on.
+	// If index is invalid, this returns a non-nil [PathStep]
+	// that reports a nil [PathStep.Type].
+	new(PathStep)
 }
 
-// Index returns the ith step in the Path and supports negative indexing.
-// A negative index starts counting from the tail of the Path such that -1
-// refers to the last step, -2 refers to the second-to-last step, and so on.
-// If index is invalid, this returns a non-nil [PathStep]
-// that reports a nil [PathStep.Type].
-func (pa Path) Index(i int) PathStep {
-	if i < 0 {
-		i = len(pa) + i
-	}
-	if i < 0 || i >= len(pa) {
-		return pathStep{}
-	}
-	return pa[i]
-}
+func (pa Path) Index(i int) PathStep { _ = "STUB: not implemented"; return *new(PathStep) }
 
 // String returns the simplified path to a node.
 // The simplified path only contains struct field accesses.
@@ -103,77 +90,34 @@ func (pa Path) Index(i int) PathStep {
 // For example:
 //
 //	MyMap.MySlices.MyField
-func (pa Path) String() string {
-	var ss []string
-	for _, s := range pa {
-		if _, ok := s.(StructField); ok {
-			ss = append(ss, s.String())
-		}
-	}
-	return strings.TrimPrefix(strings.Join(ss, ""), ".")
-}
+func (pa Path) String() string { _ = "STUB: not implemented"; return "" }
 
 // GoString returns the path to a specific node using Go syntax.
 //
 // For example:
 //
 //	(*root.MyMap["key"].(*mypkg.MyStruct).MySlices)[2][3].MyField
-func (pa Path) GoString() string {
-	var ssPre, ssPost []string
-	var numIndirect int
-	for i, s := range pa {
-		var nextStep PathStep
-		if i+1 < len(pa) {
-			nextStep = pa[i+1]
-		}
-		switch s := s.(type) {
-		case Indirect:
-			numIndirect++
-			pPre, pPost := "(", ")"
-			switch nextStep.(type) {
-			case Indirect:
-				continue // Next step is indirection, so let them batch up
-			case StructField:
-				numIndirect-- // Automatic indirection on struct fields
-			case nil:
-				pPre, pPost = "", "" // Last step; no need for parenthesis
-			}
-			if numIndirect > 0 {
-				ssPre = append(ssPre, pPre+strings.Repeat("*", numIndirect))
-				ssPost = append(ssPost, pPost)
-			}
-			numIndirect = 0
-			continue
-		case Transform:
-			ssPre = append(ssPre, s.trans.name+"(")
-			ssPost = append(ssPost, ")")
-			continue
-		}
-		ssPost = append(ssPost, s.String())
-	}
-	for i, j := 0, len(ssPre)-1; i < j; i, j = i+1, j-1 {
-		ssPre[i], ssPre[j] = ssPre[j], ssPre[i]
-	}
-	return strings.Join(ssPre, "") + strings.Join(ssPost, "")
-}
+func (pa Path) GoString() string { _ = "STUB: not implemented"; return "" }
+
+// Next step is indirection, so let them batch up
+
+// Automatic indirection on struct fields
+
+// Last step; no need for parenthesis
 
 type pathStep struct {
 	typ    reflect.Type
 	vx, vy reflect.Value
 }
 
-func (ps pathStep) Type() reflect.Type             { return ps.typ }
-func (ps pathStep) Values() (vx, vy reflect.Value) { return ps.vx, ps.vy }
-func (ps pathStep) String() string {
-	if ps.typ == nil {
-		return "<nil>"
-	}
-	s := value.TypeString(ps.typ, false)
-	if s == "" || strings.ContainsAny(s, "{}\n") {
-		return "root" // Type too simple or complex to print
-	}
-	return fmt.Sprintf("{%s}", s)
+func (ps pathStep) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (ps pathStep) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
 }
+func (ps pathStep) String() string { _ = "STUB: not implemented"; return "" }
+
+// Type too simple or complex to print
 
 // StructField is a [PathStep] that represents a struct field access
 // on a field called [StructField.Name].
@@ -192,31 +136,39 @@ type structField struct {
 	field      reflect.StructField // Field information
 }
 
-func (sf StructField) Type() reflect.Type { return sf.typ }
+func (sf StructField) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
 func (sf StructField) Values() (vx, vy reflect.Value) {
-	if !sf.unexported {
-		return sf.vx, sf.vy // CanInterface reports true
-	}
-
-	// Forcibly obtain read-write access to an unexported struct field.
-	if sf.mayForce {
-		vx = retrieveUnexportedField(sf.pvx, sf.field, sf.paddr)
-		vy = retrieveUnexportedField(sf.pvy, sf.field, sf.paddr)
-		return vx, vy // CanInterface reports true
-	}
-	return sf.vx, sf.vy // CanInterface reports false
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
 }
-func (sf StructField) String() string { return fmt.Sprintf(".%s", sf.name) }
+
+// CanInterface reports true
+
+// Forcibly obtain read-write access to an unexported struct field.
+
+// CanInterface reports true
+
+// CanInterface reports false
+
+func (sf StructField) String() string { _ = "STUB: not implemented"; return "" }
 
 // Name is the field name.
-func (sf StructField) Name() string { return sf.name }
+func (sf StructField) Name() string {
+	_ = "STUB: not implemented"
 
-// Index is the index of the field in the parent struct type.
-// See [reflect.Type.Field].
-func (sf StructField) Index() int { return sf.idx }
+	// Index is the index of the field in the parent struct type.
+	// See [reflect.Type.Field].
+	return ""
+}
 
-// SliceIndex is a [PathStep] that represents an index operation on
-// a slice or array at some index [SliceIndex.Key].
+func (sf StructField) Index() int {
+	_ = "STUB: not implemented"
+
+	// SliceIndex is a [PathStep] that represents an index operation on
+	// a slice or array at some index [SliceIndex.Key].
+	return 0
+}
+
 type SliceIndex struct{ *sliceIndex }
 type sliceIndex struct {
 	pathStep
@@ -224,31 +176,21 @@ type sliceIndex struct {
 	isSlice    bool // False for reflect.Array
 }
 
-func (si SliceIndex) Type() reflect.Type             { return si.typ }
-func (si SliceIndex) Values() (vx, vy reflect.Value) { return si.vx, si.vy }
-func (si SliceIndex) String() string {
-	switch {
-	case si.xkey == si.ykey:
-		return fmt.Sprintf("[%d]", si.xkey)
-	case si.ykey == -1:
-		// [5->?] means "I don't know where X[5] went"
-		return fmt.Sprintf("[%d->?]", si.xkey)
-	case si.xkey == -1:
-		// [?->3] means "I don't know where Y[3] came from"
-		return fmt.Sprintf("[?->%d]", si.ykey)
-	default:
-		// [5->3] means "X[5] moved to Y[3]"
-		return fmt.Sprintf("[%d->%d]", si.xkey, si.ykey)
-	}
+func (si SliceIndex) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (si SliceIndex) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
 }
+func (si SliceIndex) String() string { _ = "STUB: not implemented"; return "" }
+
+// [5->?] means "I don't know where X[5] went"
+
+// [?->3] means "I don't know where Y[3] came from"
+
+// [5->3] means "X[5] moved to Y[3]"
 
 // Key is the index key; it may return -1 if in a split state
-func (si SliceIndex) Key() int {
-	if si.xkey != si.ykey {
-		return -1
-	}
-	return si.xkey
-}
+func (si SliceIndex) Key() int { _ = "STUB: not implemented"; return 0 }
 
 // SplitKeys are the indexes for indexing into slices in the
 // x and y values, respectively. These indexes may differ due to the
@@ -259,31 +201,46 @@ func (si SliceIndex) Key() int {
 // [SliceIndex.Key] is guaranteed to return -1 if and only if the indexes
 // returned by SplitKeys are not the same. SplitKeys will never return -1 for
 // both indexes.
-func (si SliceIndex) SplitKeys() (ix, iy int) { return si.xkey, si.ykey }
+func (si SliceIndex) SplitKeys() (ix, iy int) {
+	_ = "STUB: not implemented"
+	return 0,
 
-// MapIndex is a [PathStep] that represents an index operation on a map at some index Key.
+		// MapIndex is a [PathStep] that represents an index operation on a map at some index Key.
+		0
+}
+
 type MapIndex struct{ *mapIndex }
 type mapIndex struct {
 	pathStep
 	key reflect.Value
 }
 
-func (mi MapIndex) Type() reflect.Type             { return mi.typ }
-func (mi MapIndex) Values() (vx, vy reflect.Value) { return mi.vx, mi.vy }
-func (mi MapIndex) String() string                 { return fmt.Sprintf("[%#v]", mi.key) }
+func (mi MapIndex) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (mi MapIndex) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
+}
+func (mi MapIndex) String() string { _ = "STUB: not implemented"; return "" }
 
 // Key is the value of the map key.
-func (mi MapIndex) Key() reflect.Value { return mi.key }
+func (mi MapIndex) Key() reflect.Value {
+	_ = "STUB: not implemented"
 
-// Indirect is a [PathStep] that represents pointer indirection on the parent type.
+	// Indirect is a [PathStep] that represents pointer indirection on the parent type.
+	return *new(reflect.Value)
+}
+
 type Indirect struct{ *indirect }
 type indirect struct {
 	pathStep
 }
 
-func (in Indirect) Type() reflect.Type             { return in.typ }
-func (in Indirect) Values() (vx, vy reflect.Value) { return in.vx, in.vy }
-func (in Indirect) String() string                 { return "*" }
+func (in Indirect) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (in Indirect) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
+}
+func (in Indirect) String() string { _ = "STUB: not implemented"; return "" }
 
 // TypeAssertion is a [PathStep] that represents a type assertion on an interface.
 type TypeAssertion struct{ *typeAssertion }
@@ -291,9 +248,12 @@ type typeAssertion struct {
 	pathStep
 }
 
-func (ta TypeAssertion) Type() reflect.Type             { return ta.typ }
-func (ta TypeAssertion) Values() (vx, vy reflect.Value) { return ta.vx, ta.vy }
-func (ta TypeAssertion) String() string                 { return fmt.Sprintf(".(%v)", value.TypeString(ta.typ, false)) }
+func (ta TypeAssertion) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (ta TypeAssertion) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
+}
+func (ta TypeAssertion) String() string { _ = "STUB: not implemented"; return "" }
 
 // Transform is a [PathStep] that represents a transformation
 // from the parent type to the current type.
@@ -303,47 +263,58 @@ type transform struct {
 	trans *transformer
 }
 
-func (tf Transform) Type() reflect.Type             { return tf.typ }
-func (tf Transform) Values() (vx, vy reflect.Value) { return tf.vx, tf.vy }
-func (tf Transform) String() string                 { return fmt.Sprintf("%s()", tf.trans.name) }
+func (tf Transform) Type() reflect.Type { _ = "STUB: not implemented"; return *new(reflect.Type) }
+func (tf Transform) Values() (vx, vy reflect.Value) {
+	_ = "STUB: not implemented"
+	return *new(reflect.Value), *new(reflect.Value)
+}
+func (tf Transform) String() string { _ = "STUB: not implemented"; return "" }
 
 // Name is the name of the [Transformer].
-func (tf Transform) Name() string { return tf.trans.name }
+func (tf Transform) Name() string { _ = "STUB: not implemented"; return "" }
 
 // Func is the function pointer to the transformer function.
-func (tf Transform) Func() reflect.Value { return tf.trans.fnc }
+func (tf Transform) Func() reflect.Value {
+	_ = "STUB: not implemented"
 
-// Option returns the originally constructed [Transformer] option.
-// The == operator can be used to detect the exact option used.
-func (tf Transform) Option() Option { return tf.trans }
+	// Option returns the originally constructed [Transformer] option.
+	// The == operator can be used to detect the exact option used.
+	return *new(reflect.Value)
+}
 
-// pointerPath represents a dual-stack of pointers encountered when
-// recursively traversing the x and y values. This data structure supports
-// detection of cycles and determining whether the cycles are equal.
-// In Go, cycles can occur via pointers, slices, and maps.
-//
-// The pointerPath uses a map to represent a stack; where descension into a
-// pointer pushes the address onto the stack, and ascension from a pointer
-// pops the address from the stack. Thus, when traversing into a pointer from
-// reflect.Ptr, reflect.Slice element, or reflect.Map, we can detect cycles
-// by checking whether the pointer has already been visited. The cycle detection
-// uses a separate stack for the x and y values.
-//
-// If a cycle is detected we need to determine whether the two pointers
-// should be considered equal. The definition of equality chosen by Equal
-// requires two graphs to have the same structure. To determine this, both the
-// x and y values must have a cycle where the previous pointers were also
-// encountered together as a pair.
-//
-// Semantically, this is equivalent to augmenting Indirect, SliceIndex, and
-// MapIndex with pointer information for the x and y values.
-// Suppose px and py are two pointers to compare, we then search the
-// Path for whether px was ever encountered in the Path history of x, and
-// similarly so with py. If either side has a cycle, the comparison is only
-// equal if both px and py have a cycle resulting from the same PathStep.
-//
-// Using a map as a stack is more performant as we can perform cycle detection
-// in O(1) instead of O(N) where N is len(Path).
+func (tf Transform) Option() Option {
+	_ = "STUB: not implemented"
+
+	// pointerPath represents a dual-stack of pointers encountered when
+	// recursively traversing the x and y values. This data structure supports
+	// detection of cycles and determining whether the cycles are equal.
+	// In Go, cycles can occur via pointers, slices, and maps.
+	//
+	// The pointerPath uses a map to represent a stack; where descension into a
+	// pointer pushes the address onto the stack, and ascension from a pointer
+	// pops the address from the stack. Thus, when traversing into a pointer from
+	// reflect.Ptr, reflect.Slice element, or reflect.Map, we can detect cycles
+	// by checking whether the pointer has already been visited. The cycle detection
+	// uses a separate stack for the x and y values.
+	//
+	// If a cycle is detected we need to determine whether the two pointers
+	// should be considered equal. The definition of equality chosen by Equal
+	// requires two graphs to have the same structure. To determine this, both the
+	// x and y values must have a cycle where the previous pointers were also
+	// encountered together as a pair.
+	//
+	// Semantically, this is equivalent to augmenting Indirect, SliceIndex, and
+	// MapIndex with pointer information for the x and y values.
+	// Suppose px and py are two pointers to compare, we then search the
+	// Path for whether px was ever encountered in the Path history of x, and
+	// similarly so with py. If either side has a cycle, the comparison is only
+	// equal if both px and py have a cycle resulting from the same PathStep.
+	//
+	// Using a map as a stack is more performant as we can perform cycle detection
+	// in O(1) instead of O(N) where N is len(Path).
+	return *new(Option)
+}
+
 type pointerPath struct {
 	// mx is keyed by x pointers, where the value is the associated y pointer.
 	mx map[value.Pointer]value.Pointer
@@ -351,10 +322,7 @@ type pointerPath struct {
 	my map[value.Pointer]value.Pointer
 }
 
-func (p *pointerPath) Init() {
-	p.mx = make(map[value.Pointer]value.Pointer)
-	p.my = make(map[value.Pointer]value.Pointer)
-}
+func (p *pointerPath) Init() { _ = "STUB: not implemented"; return }
 
 // Push indicates intent to descend into pointers vx and vy where
 // visited reports whether either has been seen before. If visited before,
@@ -364,27 +332,14 @@ func (p *pointerPath) Init() {
 // The pointers vx and vy must be a reflect.Ptr, reflect.Slice, or reflect.Map
 // and be non-nil.
 func (p pointerPath) Push(vx, vy reflect.Value) (equal, visited bool) {
-	px := value.PointerOf(vx)
-	py := value.PointerOf(vy)
-	_, ok1 := p.mx[px]
-	_, ok2 := p.my[py]
-	if ok1 || ok2 {
-		equal = p.mx[px] == py && p.my[py] == px // Pointers paired together
-		return equal, true
-	}
-	p.mx[px] = py
-	p.my[py] = px
+	_ = "STUB: not implemented"
 	return false, false
 }
 
+// Pointers paired together
+
 // Pop ascends from pointers vx and vy.
-func (p pointerPath) Pop(vx, vy reflect.Value) {
-	delete(p.mx, value.PointerOf(vx))
-	delete(p.my, value.PointerOf(vy))
-}
+func (p pointerPath) Pop(vx, vy reflect.Value) { _ = "STUB: not implemented"; return }
 
 // isExported reports whether the identifier is exported.
-func isExported(id string) bool {
-	r, _ := utf8.DecodeRuneInString(id)
-	return unicode.IsUpper(r)
-}
+func isExported(id string) bool { _ = "STUB: not implemented"; return false }

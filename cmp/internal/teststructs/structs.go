@@ -76,22 +76,22 @@ type (
 	AssignD <-chan bool
 )
 
-func (x StructA) Equal(y StructA) bool     { return true }
-func (x *StructB) Equal(y *StructB) bool   { return true }
-func (x StructC) Equal(y InterfaceA) bool  { return true }
-func (x StructC) InterfaceA()              {}
-func (x *StructD) Equal(y InterfaceA) bool { return true }
-func (x *StructD) InterfaceA()             {}
-func (x *StructE) Equal(y InterfaceA) bool { return true }
-func (x StructE) InterfaceA()              {}
-func (x StructF) Equal(y InterfaceA) bool  { return true }
-func (x *StructF) InterfaceA()             {}
-func (x StructNo) Equal(y InterfaceA) bool { return true }
+func (x StructA) Equal(y StructA) bool     { _ = "STUB: not implemented"; return false }
+func (x *StructB) Equal(y *StructB) bool   { _ = "STUB: not implemented"; return false }
+func (x StructC) Equal(y InterfaceA) bool  { _ = "STUB: not implemented"; return false }
+func (x StructC) InterfaceA()              { _ = "STUB: not implemented"; return }
+func (x *StructD) Equal(y InterfaceA) bool { _ = "STUB: not implemented"; return false }
+func (x *StructD) InterfaceA()             { _ = "STUB: not implemented"; return }
+func (x *StructE) Equal(y InterfaceA) bool { _ = "STUB: not implemented"; return false }
+func (x StructE) InterfaceA()              { _ = "STUB: not implemented"; return }
+func (x StructF) Equal(y InterfaceA) bool  { _ = "STUB: not implemented"; return false }
+func (x *StructF) InterfaceA()             { _ = "STUB: not implemented"; return }
+func (x StructNo) Equal(y InterfaceA) bool { _ = "STUB: not implemented"; return false }
 
-func (x AssignA) Equal(y func() int) bool      { return true }
-func (x AssignB) Equal(y struct{ A int }) bool { return true }
-func (x AssignC) Equal(y chan bool) bool       { return true }
-func (x AssignD) Equal(y <-chan bool) bool     { return true }
+func (x AssignA) Equal(y func() int) bool      { _ = "STUB: not implemented"; return false }
+func (x AssignB) Equal(y struct{ A int }) bool { _ = "STUB: not implemented"; return false }
+func (x AssignC) Equal(y chan bool) bool       { _ = "STUB: not implemented"; return false }
+func (x AssignD) Equal(y <-chan bool) bool     { _ = "STUB: not implemented"; return false }
 
 var _ = func(
 	a StructA, b StructB, c StructC, d StructD, e StructE, f StructF,
@@ -168,30 +168,24 @@ type (
 	}
 )
 
-func NewParentStructG() *ParentStructG {
-	return &ParentStructG{new(privateStruct)}
-}
-func NewParentStructH() *ParentStructH {
-	return &ParentStructH{new(PublicStruct)}
-}
-func NewParentStructI() *ParentStructI {
-	return &ParentStructI{new(privateStruct), new(PublicStruct)}
-}
-func NewParentStructJ() *ParentStructJ {
-	return &ParentStructJ{
-		privateStruct: new(privateStruct), PublicStruct: new(PublicStruct),
-	}
-}
-func (s *privateStruct) SetPrivate(i int)              { s.private = i }
-func (s *PublicStruct) SetPrivate(i int)               { s.private = i }
-func (s *ParentStructC) SetPrivate(i int)              { s.private = i }
-func (s *ParentStructD) SetPrivate(i int)              { s.private = i }
-func (s *ParentStructF) SetPrivate(i int)              { s.private = i }
-func (s *ParentStructA) PrivateStruct() *privateStruct { return &s.privateStruct }
-func (s *ParentStructC) PrivateStruct() *privateStruct { return &s.privateStruct }
-func (s *ParentStructE) PrivateStruct() *privateStruct { return &s.privateStruct }
-func (s *ParentStructF) PrivateStruct() *privateStruct { return &s.privateStruct }
-func (s *ParentStructG) PrivateStruct() *privateStruct { return s.privateStruct }
-func (s *ParentStructI) PrivateStruct() *privateStruct { return s.privateStruct }
-func (s *ParentStructJ) PrivateStruct() *privateStruct { return s.privateStruct }
-func (s *ParentStructJ) Private() *privateStruct       { return &s.private }
+func NewParentStructG() *ParentStructG { _ = "STUB: not implemented"; return nil }
+
+func NewParentStructH() *ParentStructH { _ = "STUB: not implemented"; return nil }
+
+func NewParentStructI() *ParentStructI { _ = "STUB: not implemented"; return nil }
+
+func NewParentStructJ() *ParentStructJ { _ = "STUB: not implemented"; return nil }
+
+func (s *privateStruct) SetPrivate(i int)              { _ = "STUB: not implemented"; return }
+func (s *PublicStruct) SetPrivate(i int)               { _ = "STUB: not implemented"; return }
+func (s *ParentStructC) SetPrivate(i int)              { _ = "STUB: not implemented"; return }
+func (s *ParentStructD) SetPrivate(i int)              { _ = "STUB: not implemented"; return }
+func (s *ParentStructF) SetPrivate(i int)              { _ = "STUB: not implemented"; return }
+func (s *ParentStructA) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructC) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructE) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructF) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructG) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructI) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructJ) PrivateStruct() *privateStruct { _ = "STUB: not implemented"; return nil }
+func (s *ParentStructJ) Private() *privateStruct       { _ = "STUB: not implemented"; return nil }

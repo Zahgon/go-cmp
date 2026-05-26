@@ -59,11 +59,11 @@ type DiscordState int
 
 type Timestamp int64
 
-func (d *Dirt) SetTable(t Table)                      { d.table = t }
-func (d *Dirt) SetTimestamp(t Timestamp)              { d.ts = t }
-func (d *Dirt) SetWizard(m map[string]*pb.Wizard)     { d.wizard = m }
-func (d *Dirt) SetSadistic(m map[string]*pb.Sadistic) { d.sadistic = m }
-func (d *Dirt) SetLastTime(t int64)                   { d.lastTime = t }
+func (d *Dirt) SetTable(t Table)                      { _ = "STUB: not implemented"; return }
+func (d *Dirt) SetTimestamp(t Timestamp)              { _ = "STUB: not implemented"; return }
+func (d *Dirt) SetWizard(m map[string]*pb.Wizard)     { _ = "STUB: not implemented"; return }
+func (d *Dirt) SetSadistic(m map[string]*pb.Sadistic) { _ = "STUB: not implemented"; return }
+func (d *Dirt) SetLastTime(t int64)                   { _ = "STUB: not implemented"; return }
 
 type Table interface {
 	Operation1() error
@@ -75,8 +75,8 @@ type MockTable struct {
 	state []string
 }
 
-func CreateMockTable(s []string) *MockTable { return &MockTable{s} }
-func (mt *MockTable) Operation1() error     { return nil }
-func (mt *MockTable) Operation2() error     { return nil }
-func (mt *MockTable) Operation3() error     { return nil }
-func (mt *MockTable) State() []string       { return mt.state }
+func CreateMockTable(s []string) *MockTable { _ = "STUB: not implemented"; return nil }
+func (mt *MockTable) Operation1() error     { _ = "STUB: not implemented"; return nil }
+func (mt *MockTable) Operation2() error     { _ = "STUB: not implemented"; return nil }
+func (mt *MockTable) Operation3() error     { _ = "STUB: not implemented"; return nil }
+func (mt *MockTable) State() []string       { _ = "STUB: not implemented"; return nil }

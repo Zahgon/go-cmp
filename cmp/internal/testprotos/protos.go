@@ -4,12 +4,7 @@
 
 package testprotos
 
-func Equal(x, y Message) bool {
-	if x == nil || y == nil {
-		return x == nil && y == nil
-	}
-	return x.String() == y.String()
-}
+func Equal(x, y Message) bool { _ = "STUB: not implemented"; return false }
 
 type Message interface {
 	Proto()
@@ -26,9 +21,13 @@ type notComparable struct {
 
 type Stringer struct{ X string }
 
-func (s *Stringer) String() string { return s.X }
+func (s *Stringer) String() string {
+	_ = "STUB: not implemented"
 
-// Project1 protocol buffers
+	// Project1 protocol buffers
+	return ""
+}
+
 type (
 	Eagle_States         int
 	Eagle_MissingCalls   int

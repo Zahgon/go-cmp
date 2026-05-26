@@ -12,7 +12,9 @@ var debug debugger
 type debugger struct{}
 
 func (debugger) Begin(_, _ int, f EqualFunc, _, _ *EditScript) EqualFunc {
-	return f
+	_ = "STUB: not implemented"
+	return *new(EqualFunc)
 }
-func (debugger) Update() {}
-func (debugger) Finish() {}
+
+func (debugger) Update() { _ = "STUB: not implemented"; return }
+func (debugger) Finish() { _ = "STUB: not implemented"; return }

@@ -20,35 +20,15 @@ type defaultReporter struct {
 	curr *valueNode
 }
 
-func (r *defaultReporter) PushStep(ps PathStep) {
-	r.curr = r.curr.PushStep(ps)
-	if r.root == nil {
-		r.root = r.curr
-	}
-}
-func (r *defaultReporter) Report(rs Result) {
-	r.curr.Report(rs)
-}
-func (r *defaultReporter) PopStep() {
-	r.curr = r.curr.PopStep()
-}
+func (r *defaultReporter) PushStep(ps PathStep) { _ = "STUB: not implemented"; return }
+
+func (r *defaultReporter) Report(rs Result) { _ = "STUB: not implemented"; return }
+
+func (r *defaultReporter) PopStep() { _ = "STUB: not implemented"; return }
 
 // String provides a full report of the differences detected as a structured
 // literal in pseudo-Go syntax. String may only be called after the entire tree
 // has been traversed.
-func (r *defaultReporter) String() string {
-	assert(r.root != nil && r.curr == nil)
-	if r.root.NumDiff == 0 {
-		return ""
-	}
-	ptrs := new(pointerReferences)
-	text := formatOptions{}.FormatDiff(r.root, ptrs)
-	resolveReferences(text)
-	return text.String()
-}
+func (r *defaultReporter) String() string { _ = "STUB: not implemented"; return "" }
 
-func assert(ok bool) {
-	if !ok {
-		panic("assertion failure")
-	}
-}
+func assert(ok bool) { _ = "STUB: not implemented"; return }
